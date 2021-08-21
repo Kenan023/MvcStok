@@ -1,0 +1,65 @@
+﻿using MvcStok.Models.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace MvcStok.Controllers
+{
+    public class MusteriController : Controller
+    {
+        // GET: Musteri
+        MvcDbStockEntities db = new MvcDbStockEntities();
+        public ActionResult Index(string p)
+        {
+            var degerler = from d in db.TBLMUSTERILERs select d;
+            if (!string.IsNullOrEmpty(p))
+            {
+                degerler = degerler.Where(m =>m.MUSTERIAD.Contains(p));
+            }
+            return View(degerler.ToList());
+
+            //var degerler = db.TBLMUSTERILERs.ToList();
+           // return View(degerler);
+        }
+        [HttpGet]
+        public ActionResult YeniMusteri()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult YeniMusteri(TBLMUSTERILER p2)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("YeniMusteri");
+            }
+            db.TBLMUSTERILERs.Add(p2);
+            db.SaveChanges();
+            return View();
+        }
+        public ActionResult SIL(int id)
+        {
+            var musteri = db.TBLMUSTERILERs.Find(id);
+            db.TBLMUSTERILERs.Remove(musteri);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        public ActionResult MusteriGetir(int id)
+        {
+            var mus = db.TBLMUSTERILERs.Find(id);
+            return View("MusteriGetir", mus);
+        }
+        public ActionResult Guncelle(TBLMUSTERILER p1)
+        {
+            var mus = db.TBLMUSTERILERs.Find(p1.MUSTERIID);
+            mus.MUSTERIAD = p1.MUSTERIAD;
+            mus.MUSTERISOYAD = p1.MUSTERISOYAD;
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
+    }
+}
